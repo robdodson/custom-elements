@@ -1,0 +1,85 @@
+<!doctype html>
+<!--
+    @license
+    Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<title>Custom Elements Tests</title>
+<meta charset="utf-8">
+<script src="../../src/native-shim.js"></script>
+<script src="../../../web-component-tester/browser.js"></script>
+
+<script>
+
+  suite('Native Shim', function() {
+
+    test('works with createElement()', function() {
+      assert.equal(HTMLElement.browserConstruction, false);
+      assert.equal(HTMLElement.userConstruction, false);
+      function ES5Element1() {
+        return HTMLElement.apply(this);
+      }
+      ES5Element1.prototype = Object.create(HTMLElement.prototype);
+      ES5Element1.prototype.constructor = ES5Element1;
+
+      customElements.define('es5-element-1', ES5Element1);
+
+      var el = document.createElement('es5-element-1');
+      assert.instanceOf(el, ES5Element1);
+      assert.instanceOf(el, HTMLElement);
+      assert.instanceOf(el, HTMLElement.nativeClass);
+      // debugger;
+      assert.equal(el.tagName, 'ES5-ELEMENT-1');
+      assert.equal(HTMLElement.browserConstruction, false);
+      assert.equal(HTMLElement.userConstruction, false);
+    });
+
+    test('works with user-called constructors', function() {
+      assert.equal(HTMLElement.browserConstruction, false);
+      assert.equal(HTMLElement.userConstruction, false);
+      function ES5Element2() {
+        return HTMLElement.apply(this);
+      }
+      ES5Element2.prototype = Object.create(HTMLElement.prototype);
+      ES5Element2.prototype.constructor = ES5Element2;
+
+      customElements.define('es5-element-2', ES5Element2);
+
+      var el = new ES5Element2();
+      assert.instanceOf(el, ES5Element2);
+      assert.instanceOf(el, HTMLElement);
+      assert.instanceOf(el, HTMLElement.nativeClass);
+      // debugger;
+      assert.equal(el.tagName, 'ES5-ELEMENT-2');
+      assert.equal(HTMLElement.browserConstruction, false);
+      assert.equal(HTMLElement.userConstruction, false);
+    });
+
+    test('works with parser created elements', function() {
+      assert.equal(HTMLElement.browserConstruction, false);
+      assert.equal(HTMLElement.userConstruction, false);
+      function ES5Element3() {
+        return HTMLElement.apply(this);
+      }
+      ES5Element3.prototype = Object.create(HTMLElement.prototype);
+      ES5Element3.prototype.constructor = ES5Element3;
+
+      customElements.define('es5-element-3', ES5Element3);
+
+      var container = document.createElement('div');
+      container.innerHTML = '<es5-element-3></es5-element-3>';
+      var el = container.querySelector('es5-element-3');
+      assert.instanceOf(el, ES5Element3);
+      assert.instanceOf(el, HTMLElement);
+      assert.instanceOf(el, HTMLElement.nativeClass);
+      assert.equal(el.tagName, 'ES5-ELEMENT-3');
+      assert.equal(HTMLElement.browserConstruction, false);
+      assert.equal(HTMLElement.userConstruction, false);
+    });
+
+  });
+</script>
